@@ -5,13 +5,18 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 
+import sys
+import os
+sys.path.append(os.path.abspath('C:/Users/ewenr/Desktop/02 - PoliTo/02 - Second Semester/02 - Explainable & Trustworthy AI/03 - Project/02 - Code/pytorch_explain_variant'))
+
 import torch_explain as te
 from torch_explain import datasets
 from torch_explain.nn.concepts import ConceptReasoningLayer
 from torch_explain.nn.semantics import GodelTNorm, ProductTNorm
 
 
-def train_concept_bottleneck_model(x, c, y, embedding_size=1, logic=GodelTNorm(), temperature=100):
+def train_concept_bottleneck_model(x, c, y, embedding_size=1):
+    n_concepts = c.shape[1]
     x_train, x_test, c_train, c_test, y_train, y_test = train_test_split(x, c, y, test_size=0.33, random_state=42)
 
     y_train = F.one_hot(y_train.long().ravel()).float()
@@ -23,7 +28,7 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, logic=GodelTNorm()
         torch.nn.LeakyReLU(),
     )
     concept_embedder = te.nn.ConceptEmbedding(10, c.shape[1], embedding_size)
-    task_predictor = ConceptReasoningLayer(embedding_size, y_train.shape[1], logic, temperature)
+    task_predictor = ConceptReasoningLayer(embedding_size, y_train.shape[1], n_concepts)
     model = torch.nn.Sequential(encoder, concept_embedder, task_predictor)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.01)
@@ -66,21 +71,18 @@ class LukasiewiczTNorm:
 
 class TestTemplateObject(unittest.TestCase):
     def test_deep_core(self):
+
+        print("\n\nxor dataset:\n")
         x, c, y = datasets.xor(1000)
         train_concept_bottleneck_model(x, c, y, embedding_size=16)
 
+        print("\n\ntrigonometry dataset:\n")
         x, c, y = datasets.trigonometry(1000)
         train_concept_bottleneck_model(x, c, y, embedding_size=16)
-        #
+        
+        print("\n\ndot dataset:\n")
         x, c, y = datasets.dot(1000)
         train_concept_bottleneck_model(x, c, y, embedding_size=16)
-
-        return
-
-    def test_semantics(self):
-        x, c, y = datasets.xor(200)
-        for logic in [GodelTNorm(), ProductTNorm()]:
-            train_concept_bottleneck_model(x, c, y, embedding_size=16, logic=logic)
 
         return
 
