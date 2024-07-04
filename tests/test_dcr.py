@@ -35,6 +35,7 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1):
     loss_form_c = torch.nn.BCELoss()
     loss_form_y = torch.nn.BCELoss()
     model.train()
+    
     for epoch in range(501):
         optimizer.zero_grad()
 
@@ -58,9 +59,9 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1):
             concept_accuracy = accuracy_score(c_test, c_pred > 0.5)
             print(f'Epoch {epoch}: loss {loss:.4f} task accuracy: {task_accuracy:.4f} concept accuracy: {concept_accuracy:.4f}')
 
-    local_explanations = task_predictor.explain(c_emb, c_pred, 'local')
-    global_explanations = task_predictor.explain(c_emb, c_pred, 'global')
-    print(global_explanations)
+    global_explanations = task_predictor.explain(c_emb, c_pred)
+    for pred_class in global_explanations:
+        print(f"\nClass:\t\t{pred_class['class']}\nExplanation:\t{pred_class['explanation']}")
 
     return model
 
