@@ -32,18 +32,18 @@ class ConceptReasoningLayer(torch.nn.Module):
 
         weights = self.linear.weight.data
         explanations = []
-        
+
         for i, class_name in enumerate(class_names):
             class_weights = weights[i]
             total_weight = class_weights.abs().sum()
             explanation_terms = []
-            
+
             for weight, name in zip(class_weights, concept_names):
-                # Calculate percentage contribution of each weight
-                contribution = (weight.abs() / total_weight * 100).item()
+                # Normalise the weights correctly
+                contribution = (weight / total_weight * 100).item()  # change here to use the actual weight
                 sign = "+" if weight >= 0 else "-"
-                explanation_terms.append(f"{weight:+.2f} * {name} ({sign} {contribution:.1f}%)")
-            
+                explanation_terms.append(f"{weight:+.2f} * {name} ({sign} {abs(contribution):.1f}%)")  # show absolute value in the explanation
+
             explanation = " + ".join(explanation_terms)
             explanations.append({
                 'class': class_name,
