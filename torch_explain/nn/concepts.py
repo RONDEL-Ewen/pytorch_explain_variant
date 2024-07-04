@@ -44,7 +44,7 @@ class ConceptReasoningLayer(torch.nn.Module):
                 sign = "+" if weight >= 0 else "-"
                 explanation_terms.append(f"{weight:+.2f} * {name} ({sign} {abs(contribution):.1f}%)")  # show absolute value in the explanation
 
-            explanation = " + ".join(explanation_terms)
+            explanation = " ".join(explanation_terms)
             explanations.append({
                 'class': class_name,
                 'explanation': explanation
