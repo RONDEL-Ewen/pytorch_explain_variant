@@ -1,0 +1,130 @@
+\documentclass[sigconf, nonacm]{acmart}
+
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Explainable and Trustworthy AI - Project]{}{}{}
+
+
+
+\begin{document}
+
+\title{P3 - Exploring linear equations as means for an interpretable decision with DCR}
+
+%%
+%% The "author" 
+\author{Ewen Rondel}
+\affiliation{%
+  \text{s321468}
+  \\
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+\author{João Almeida}
+\affiliation{%
+  \text{s123456}
+  \\
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+\author{Thomas Lepretre}
+\affiliation{%
+  \text{s332585}
+  \\
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+
+
+%%
+\begin{abstract}
+After exploring different ideas for enhancing the interpretability of concept-based models, we propose a novel variant of the Deep Concept Reasoning (DCR) model, focusing on utilizing linear equations to achieve interpretable predictions. The traditional Concept Embedding Model (CEM) offers robust generalization capabilities akin to black-box models, but lacks interpretability due to its high-dimensional concept embeddings. Conversely, the DCR model provides interpretable predictions by generating logic rules over concept embeddings, yet its interpretability paradigm can be restrictive.
+
+Our approach aims to simplify and enhance the interpretability of the DCR model by employing linear equations to represent concept embeddings. This modification maintains the end-to-end trainability and predictive power of DCR while offering a more straightforward, globally interpretable prediction mechanism. Reviewing the previous work on supervised concept-based models, we emphasize the methodologies and limitations of CEM and DCR.
+
+The proposed model is implemented and rigorously tested on both synthetic and real-world datasets. We evaluate its performance against standard DCR using various metrics, focusing on generalization capability and interpretability. Preliminary results indicate that our model not only retains the predictive accuracy of DCR but also significantly improves the clarity and simplicity of the interpretability, making it a promising tool for applications requiring transparent decision-making processes.
+\end{abstract}
+
+
+
+%% OPTIONAL 
+%% Keywords. The author(s) should pick words that accurately describe the work being presented. Separate the keywords with commas.
+\keywords{}
+
+
+
+%%
+%% This command processes the author and affiliation and title information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}
+In recent years, the field of Explainable Artificial Intelligence (XAI) has gained significant attention as machine learning models become increasingly complex and ubiquitous in decision-making processes. While these advanced models offer impressive predictive capabilities, their lack of transparency often hinders their adoption in critical domains where interpretability is paramount. Concept-based models have emerged as a promising approach to bridge the gap between high performance and interpretability in machine learning.
+The evolution of concept-based models has seen several key developments, from the Concept Bottleneck Model (CBM) \cite{koh2020concept} to the Concept Embedding Model (CEM) \cite{espinosa2022concept}, and most recently, the Deep Concept Reasoning (DCR) model \cite{barbiero2023interpretable}. Each iteration has aimed to improve upon its predecessors, balancing, and with DCR, outright challenging, the trade-off between generalization capability and interpretability. However, further improvements in achieving clear, intuitive explanations for model decisions without sacrificing high performance can still be explored.
+Our research focuses on developing a novel variant of the DCR model that maintains its end-to-end trainability and predictive power while enhancing interpretability through the use of linear equations. This approach aims to simplify the interpretation of concept embeddings, providing a more accessible and globally interpretable prediction mechanism compared to the logic rules employed in the original DCR model.
+The primary objectives of this study are to:
+
+\begin{enumerate}
+    \item Analyze the strengths and limitations of existing supervised concept-based models, with a particular focus on CEM and DCR.
+    \item Propose and implement a new model that utilizes linear equations for interpretable predictions over concept embeddings.
+    \item Evaluate the performance and interpretability of our proposed model against the standard DCR model using both synthetic and real-world datasets.
+\end{enumerate}
+
+With these objectives in mind, we aim to contribute to the ongoing development of explainable AI systems that can be reliably deployed in scenarios requiring both high performance and transparent decision-making processes, by further pushing the ease of interpretability of the models.
+
+\section{Related work}
+The field of concept-based models in machine learning has seen rapid advancement in recent years, with each new model building upon the strengths of its predecessors while addressing their limitations. This section provides an overview of the key developments leading to our proposed model.
+\subsection{Concept Bottleneck Model (CBM)}
+Koh et al. introduced the Concept Bottleneck Model in 2020 \cite{koh2020concept}, marking a significant step towards interpretable machine learning. CBM structures the prediction process into two distinct stages: concept prediction and task prediction. By forcing the model to make predictions through an intermediate layer of human-specified concepts, CBM provides a level of transparency to the decision-making process. However, the use of single neurons to represent concepts limits the model's representation capability, often resulting in a trade-off between interpretability and predictive performance.
+\subsection{Concept Embedding Model (CEM)}
+To address the limitations of CBM, Zarlenga et al. proposed the Concept Embedding Model in 2022 \cite{espinosa2022concept}. CEM represents concepts as embeddings rather than single neurons, significantly enhancing the model's representation capability. This approach allows CEM to achieve generalization performance comparable to black-box end-to-end models while retaining the ability to interact with the model through concepts. However, the high-dimensional nature of concept embeddings in CEM makes it challenging to interpret the model's decisions, as the individual dimensions of these embeddings lack clear semantic meaning.
+\subsection{Deep Concept Reasoning (DCR)}
+Building upon the strengths of CEM, Barbiero et al. introduced the Deep Concept Reasoning model in 2023 \cite{barbiero2023interpretable}. DCR is an end-to-end trainable model that provides interpretable predictions in the form of logic rules over concept embeddings. For each sample, DCR predicts a rule that holds true for the given sample's concept embeddings, which is then symbolically executed over the concept scores. This approach offers a novel way to interpret the model's decisions, bridging the gap between the high performance of concept embeddings and the interpretability desired in many applications.
+
+\section{Research gaps}
+While the DCR model represents a significant advancement in interpretable concept-based models, several opportunities for improvement remain:
+
+\subsection{Complexity of Logic Rules}
+The primary challenge with DCR lies in the complexity of its interpretability mechanism. The logic rules generated by DCR, while powerful in their expressiveness, can be difficult to understand for users without a strong background in formal logic. This complexity may limit the model's practical applicability in domains where quick and intuitive interpretations are crucial, such as medical diagnosis or financial decision-making.
+\subsection{Scalability of Interpretations}
+As the number of concepts and the complexity of the task increase, the logic rules produced by DCR may become increasingly intricate. This scalability issue could potentially hinder the model's effectiveness in handling more complex real-world scenarios where numerous concepts interact in subtle ways.
+\subsection{Global vs. Local Interpretability}
+DCR provides sample-specific logic rules, offering local interpretability. However, there's a gap in providing a global understanding of the model's behavior across all samples. A more holistic view of the model's decision-making process could enhance trust and facilitate broader insights into the underlying patterns learned by the model.
+\subsection{Trade-off Between Expressiveness and Simplicity}
+While logic rules offer high expressiveness, they may not always be the most concise or intuitive way to represent relationships between concepts and predictions. There's an opportunity to explore alternative representation methods that balance expressiveness with simplicity, potentially making the model's decisions more accessible to a wider audience.
+
+By addressing these research gaps, particularly the complexity of logic rules, we aim to develop a variant of DCR that maintains its strengths in concept-based reasoning while offering more intuitive and widely accessible interpretations. Our proposed approach using linear equations seeks to tackle these challenges, especially in simplifying the interpretability mechanism without sacrificing the model's predictive power.
+
+\section{Methodology}
+[Overview of the proposed solution]
+
+
+\section{Experiments and analysis}
+[Presentation of the experimental results and their discussion]
+
+
+
+\section{Conclusions}
+[Brief conclusion summarizing the main outcomes of the project]
+
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{biblio}
+
+
+\end{document}
+\endinput
+%%
