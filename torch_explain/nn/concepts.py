@@ -18,7 +18,7 @@ class ConceptReasoningLayer(torch.nn.Module):
         self.n_concepts = n_concepts
         self.linear = torch.nn.Linear(emb_size * n_concepts, n_classes)
 
-    def forward(self, c_emb, c):
+    def forward(self, c_emb):
         c_emb = c_emb.view(c_emb.shape[0], -1)
         scores = self.linear(c_emb)
         predictions = torch.sigmoid(scores)
