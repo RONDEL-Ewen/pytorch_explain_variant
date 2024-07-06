@@ -68,3 +68,15 @@ def dot(size, random_state=42):
     c = torch.FloatTensor(c)
     y = torch.Tensor(y)
     return x, c, y.unsqueeze(-1)
+
+def main():
+    x, c, y = xor(10)
+    print("\nX:\n")
+    print(x)
+    print("\nC:\n")
+    print(c)
+    print("\nY:\n")
+    print(y)
+
+if __name__ == '__main__':
+    main()
