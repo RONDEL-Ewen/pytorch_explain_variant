@@ -55,18 +55,20 @@ def celebA(size):
     c = torch.FloatTensor(new_data['Concepts'].values.tolist())
     y = torch.FloatTensor(new_data['isMale'].values.tolist())
 
-    return x, c, y.unsqueeze(-1)
+    return x, c, y.unsqueeze(-1), top_attributes
 
 
 
 def main():
-    x, c, y = celebA(10)
+    x, c, y, concepts_names = celebA(10)
     print("\nX:\n")
     print(x)
     print("\nC:\n")
     print(c)
     print("\nY:\n")
     print(y)
+    print("\nConcepts:\n")
+    print(concepts_names)
 
 if __name__ == '__main__':
     main()
