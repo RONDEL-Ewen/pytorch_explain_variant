@@ -68,7 +68,7 @@ target/
 
 # venv
 venv/
-myvenv/
+myenv/
 
 # dataset
 CelebA_shifted/
