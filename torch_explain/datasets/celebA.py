@@ -6,8 +6,8 @@ import torch
 from torchvision import transforms
 import time
 
-image_folder = 'D:\CelebA_shifted\CelebA_shifted\img_align_celeba\img_align_celeba'
-data_path = 'D:\CelebA_shifted\CelebA_shifted\list_attr_celeba.txt'
+image_folder = 'C:/Users/migue/Documents/Faculdade/8-Semestre-erasmus/XAI/CelebA_shifted/img_align_celeba/img_align_celeba'
+data_path = 'C:/Users/migue/Documents/Faculdade/8-Semestre-erasmus/XAI/CelebA_shifted/list_attr_celeba.txt'
 
 columns = [
     "Image", "5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald",
