@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import torch
 from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
 
 image_folder = 'D:\CelebA_shifted\CelebA_shifted\img_align_celeba\img_align_celeba'
 data_path = 'D:\CelebA_shifted\CelebA_shifted\list_attr_celeba.txt'
@@ -31,18 +32,26 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-def image_to_tensor(image_name):
-    image_path = "\\".join([image_folder, image_name])
-    print(image_path)
-    with Image.open(image_path) as img:
-        tensor = transform(img)
-    return tensor
+class CelebADataset(Dataset):
+    def __init__(self, data, transform=None):
+        self.data = data
+        self.transform = transform
+        self.image_folder = image_folder
 
+    def __len__(self):
+        return len(self.data)
 
+    def __getitem__(self, idx):
+        img_name = os.path.join(self.image_folder, self.data.iloc[idx, 0])
+        with Image.open(img_name) as img:
+            if self.transform:
+                img = self.transform(img)
+        concepts = torch.FloatTensor(self.data.iloc[idx, 1])
+        isMale = torch.FloatTensor([self.data.iloc[idx, 2]])
+        return img, concepts, isMale
 
 def celebA(size, top_attributes=True):
-
-    if (size > 20699):
+    if size > 20699:
         size = 20699
 
     data = pd.read_csv(data_path, delim_whitespace=True, skiprows=1, header=None)
@@ -58,27 +67,36 @@ def celebA(size, top_attributes=True):
     boolean_data2 = data["Male"] == 1
     data['isMale'] = boolean_data2.values.tolist()
 
-    new_data = data[['Image', "Concepts", "isMale"]].head(size)
+    new_data = data[['Image', 'Concepts', 'isMale']].head(size)
 
-    tensors = [image_to_tensor(img_name) for img_name in new_data['Image']]
+    dataset = CelebADataset(new_data, transform=transform)
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=False, num_workers=4)
 
-    x = torch.stack(tensors)
-    c = torch.FloatTensor(new_data['Concepts'].values.tolist())
-    y = torch.FloatTensor(new_data['isMale'].values.tolist())
+    x, c, y = [], [], []
 
-    return x, c, y.unsqueeze(-1), attributes_name
+    for images, concepts, labels in dataloader:
+        x.append(images)
+        c.append(concepts)
+        y.append(labels)
 
+    x = torch.cat(x)
+    c = torch.cat(c)
+    y = torch.cat(y)
 
+    return x, c, y, attributes_name
 
 def main():
     x, c, y, concepts_names = celebA(10, False)
-    print("\nX:\n")
-    print(x)
-    print("\nC:\n")
-    print(c)
-    print("\nY:\n")
-    print(y)
-    print("\nConcepts:\n")
+    print(x.shape)
+    print(c.shape)
+    print(y.shape)
+    #print("\nX:\n")
+    #print(x.shape)
+    #print("\nC:\n")
+    #print(c.shape)
+    #print("\nY:\n")
+    #print(y.shape)
+    #print("\nConcepts:\n")
     print(concepts_names)
 
 if __name__ == '__main__':

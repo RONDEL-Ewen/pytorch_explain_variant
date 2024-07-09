@@ -11,7 +11,7 @@ import sys
 import os
 sys.path.append(os.path.abspath('C:/Users/ewenr/Desktop/02 - PoliTo/02 - Second Semester/02 - Explainable & Trustworthy AI/03 - Project/02 - Code/pytorch_explain_variant'))
 from torch_explain.nn.concepts import ConceptEmbedding, ConceptReasoningLayer
-from torch_explain.datasets.celebA import celebA
+from torch_explain.datasets.celebA_gpu import celebA
 
 def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None, classes_names=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,7 +23,8 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
     y_test = F.one_hot(y_test.long().ravel()).float().to(device)
 
     # Encoder
-    encoder = models.resnet34(pretrained=True)
+    #encoder = models.resnet34(pretrained=True)
+    encoder = models.resnet18(pretrained=True)
     for param in encoder.parameters():
         param.requires_grad = False
     fc = nn.Linear(encoder.fc.in_features, 16)
@@ -47,7 +48,7 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
     loss_form_y = torch.nn.BCELoss()
     model.train()
 
-    for epoch in range (100):
+    for epoch in range (500):
         optimizer.zero_grad()
 
         h = encoder(x_train.to(device))
@@ -60,14 +61,14 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
         loss.backward()
         optimizer.step()
 
-        if epoch % 5 == 0:
+        if (epoch+1) % 100 == 0:
             h = encoder(x_test.to(device))
             c_emb, c_pred = concept_embedder.forward(h, [0,1], c_test.to(device), train=False)
             y_pred = task_predictor.forward(c_emb)
 
             task_accuracy = accuracy_score(y_test.cpu(), y_pred.cpu() > 0.5)
             concept_accuracy = accuracy_score(c_test.cpu(), c_pred.cpu() > 0.5)
-            print(f'Epoch {epoch}: loss {loss:.4f} task accuracy: {task_accuracy:.4f} concept accuracy: {concept_accuracy:.4f}')
+            print(f'Epoch {epoch+1}: loss {loss:.4f} | Task accuracy: {task_accuracy:.4f} | Concept accuracy: {concept_accuracy:.4f}')
 
     global_explanations = task_predictor.explain(c_emb, c_pred, concepts_name, classes_names)
     for pred_class in global_explanations:
@@ -81,7 +82,7 @@ class TestTemplateObject(unittest.TestCase):
     def test_deep_core(self):
 
         print("\n\nCelebA dataset\n")
-        x, c, y, concepts_name = celebA(100)
+        x, c, y, concepts_name = celebA(400)
         train_concept_bottleneck_model(x, c, y, embedding_size=16, concepts_name=concepts_name, classes_names=['Male', 'Female'])
 
         return
