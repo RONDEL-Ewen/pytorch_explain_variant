@@ -1,10 +1,8 @@
 import pandas as pd
-import numpy as np
 import os
 from PIL import Image
 import torch
 from torchvision import transforms
-import time
 
 image_folder = 'D:\CelebA_shifted\CelebA_shifted\img_align_celeba\img_align_celeba'
 data_path = 'D:\CelebA_shifted\CelebA_shifted\list_attr_celeba.txt'
@@ -20,6 +18,7 @@ columns = [
 ]
 
 transform = transforms.Compose([
+    transforms.Resize((64, 64)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
