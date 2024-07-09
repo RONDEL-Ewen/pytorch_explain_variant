@@ -21,15 +21,19 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
     y_test = F.one_hot(y_test.long().ravel()).float()
 
     # Encoder
-    encoder = models.resnet34(pretrained=True)
+    #encoder = models.resnet34(pretrained=True)
+    encoder = models.resnet18(pretrained=True)
     for param in encoder.parameters():
         param.requires_grad = False
     fc = nn.Linear(encoder.fc.in_features, 16)
     encoder.fc = fc
+
     # Concept Embedding
     concept_embedder = ConceptEmbedding(16, n_concepts, embedding_size)
+
     # Concept Reasoning
     task_predictor = ConceptReasoningLayer(embedding_size, y_train.shape[1], n_concepts)
+
     # Full model
     model = torch.nn.Sequential(encoder, concept_embedder, task_predictor)
 
@@ -38,12 +42,11 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
     loss_form_y = torch.nn.BCELoss()
     model.train()
 
-    for epoch in range (10):
+    for epoch in range (50):
         optimizer.zero_grad()
 
         h = encoder(x_train)
         c_emb, c_pred = concept_embedder.forward(h, [0,1], c_train, train=True)
-        #y_pred = task_predictor(c_emb, c_pred)
         y_pred = task_predictor.forward(c_emb)
 
         concept_loss = loss_form_c(c_pred, c_train)
@@ -52,10 +55,9 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1, concepts_name=None
         loss.backward()
         optimizer.step()
 
-        if epoch % 10 == 0:
+        if epoch % 5 == 0:
             h = encoder(x_test)
             c_emb, c_pred = concept_embedder.forward(h, [0,1], c_test, train=False)
-            #y_pred = task_predictor(c_emb, c_pred)
             y_pred = task_predictor.forward(c_emb)
 
             task_accuracy = accuracy_score(y_test, y_pred > 0.5)
