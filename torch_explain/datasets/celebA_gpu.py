@@ -18,6 +18,14 @@ columns = [
     "Wearing_Hat", "Wearing_Lipstick", "Wearing_Necklace", "Wearing_Necktie", "Young"
 ]
 
+selected_concepts = [
+    "Arched_Eyebrows",
+    "Heavy_Makeup",
+    "No_Beard",
+    "Wearing_Earrings",
+    "Wearing_Lipstick"
+]
+
 transform = transforms.Compose([
     transforms.Resize((64, 64)),
     transforms.ToTensor(),
@@ -42,16 +50,19 @@ class CelebADataset(Dataset):
         isMale = torch.FloatTensor([self.data.iloc[idx, 2]])
         return img, concepts, isMale
 
-def celebA(size):
+def celebA(size, top_attributes=True):
     if size > 20699:
         size = 20699
 
     data = pd.read_csv(data_path, delim_whitespace=True, skiprows=1, header=None)
     data.columns = columns
 
-    true_counts = (data.iloc[:, 1:] == 1).sum()
-    top_attributes = true_counts.nlargest(5).index.tolist()
-    boolean_data = data[top_attributes] == 1
+    if top_attributes:
+        true_counts = (data.iloc[:, 1:] == 1).sum()
+        attributes_name = true_counts.nlargest(5).index.tolist()
+    else:
+        attributes_name = selected_concepts
+    boolean_data = data[attributes_name] == 1
     data['Concepts'] = boolean_data.values.tolist()
     boolean_data2 = data["Male"] == 1
     data['isMale'] = boolean_data2.values.tolist()
@@ -72,10 +83,10 @@ def celebA(size):
     c = torch.cat(c)
     y = torch.cat(y)
 
-    return x, c, y, top_attributes
+    return x, c, y, attributes_name
 
 def main():
-    x, c, y, concepts_names = celebA(2000)
+    x, c, y, concepts_names = celebA(10, False)
     print(x.shape)
     print(c.shape)
     print(y.shape)
@@ -86,7 +97,7 @@ def main():
     #print("\nY:\n")
     #print(y.shape)
     #print("\nConcepts:\n")
-    #print(concepts_names)
+    print(concepts_names)
 
 if __name__ == '__main__':
     main()
