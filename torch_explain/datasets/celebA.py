@@ -6,8 +6,8 @@ import torch
 from torchvision import transforms
 import time
 
-image_folder = 'D:\CelebA_shifted\CelebA_shifted\img_align_celeba\img_align_celeba'
-data_path = 'D:\CelebA_shifted\CelebA_shifted\list_attr_celeba.txt'
+image_folder = r'C:\Users\thoma\OneDrive\Bureau\CelebA_shifted\img_align_celeba'
+data_path = r'C:\Users\thoma\OneDrive\Bureau\CelebA_shifted\list_attr_celeba.txt'
 
 columns = [
     "Image", "5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald",
@@ -19,20 +19,25 @@ columns = [
     "Wearing_Hat", "Wearing_Lipstick", "Wearing_Necklace", "Wearing_Necktie", "Young"
 ]
 
+top_attributes = ['No_Beard', 'Young', 'Attractive', 'Smiling', 'Mouth_Slightly_Open']
+
+MF_attributes = ['Wearing_Lipstick', 'Heavy_Makeup', 'No_Beard', 'Arched_Eyebrows', 'Wearing_Earrings']
+
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 def image_to_tensor(image_name):
-    image_path = os.path.join(image_folder, image_name)
+    image_path = "\\".join([image_folder, image_name])
+    print(image_path)
     with Image.open(image_path) as img:
         tensor = transform(img)
     return tensor
 
 
 
-def celebA(size):
+def celebA(size, concepts_type=MF_attributes):
 
     if (size > 20699):
         size = 20699
@@ -40,14 +45,14 @@ def celebA(size):
     data = pd.read_csv(data_path, delim_whitespace=True, skiprows=1, header=None)
     data.columns = columns
 
-    true_counts = (data.iloc[:, 1:] == 1).sum()
-    top_attributes = true_counts.nlargest(5).index.tolist()
-    boolean_data = data[top_attributes] == 1
+    attributes = concepts_type
+    boolean_data = data[concepts_type] == 1
     data['Concepts'] = boolean_data.values.tolist()
     boolean_data2 = data["Male"] == 1
     data['isMale'] = boolean_data2.values.tolist()
 
     new_data = data[['Image', "Concepts", "isMale"]].head(size)
+    print(new_data.head())
 
     tensors = [image_to_tensor(img_name) for img_name in new_data['Image']]
 
@@ -55,7 +60,7 @@ def celebA(size):
     c = torch.FloatTensor(new_data['Concepts'].values.tolist())
     y = torch.FloatTensor(new_data['isMale'].values.tolist())
 
-    return x, c, y.unsqueeze(-1), top_attributes
+    return x, c, y.unsqueeze(-1), concepts_type
 
 
 
