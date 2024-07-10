@@ -6,8 +6,15 @@ import torch
 from torchvision import transforms
 import time
 
-image_folder = 'C:/Users/migue/Documents/Faculdade/8-Semestre-erasmus/XAI/CelebA_shifted/img_align_celeba/img_align_celeba'
-data_path = 'C:/Users/migue/Documents/Faculdade/8-Semestre-erasmus/XAI/CelebA_shifted/list_attr_celeba.txt'
+# Get the directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Navigate up two directories
+base_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
+
+# Construct the relative paths
+image_folder = os.path.join(base_dir, 'CelebA_shifted', 'img_align_celeba', 'img_align_celeba')
+data_path = os.path.join(base_dir, 'CelebA_shifted', 'list_attr_celeba.txt')
 
 columns = [
     "Image", "5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald",
@@ -43,6 +50,8 @@ def celebA(size):
 
     true_counts = (data.iloc[:, 1:] == 1).sum()
     top_attributes = true_counts.nlargest(5).index.tolist()
+    # hijack top_attributes
+    top_attributes = ['Wearing_Necktie', 'Gray_Hair', 'Bald']
     boolean_data = data[top_attributes] == 1
     data['Concepts'] = boolean_data.values.tolist()
     boolean_data2 = data["Male"] == 1

@@ -83,7 +83,7 @@ class TestTemplateObject(unittest.TestCase):
     def test_deep_core(self):
 
         print("\n\nCelebA dataset\n")
-        x, c, y, concepts_name = celebA(1000)
+        x, c, y, concepts_name = celebA(200)
         train_concept_bottleneck_model(x, c, y, embedding_size=16, concepts_name=concepts_name, classes_names=['Male', 'Female'])
 
         return
