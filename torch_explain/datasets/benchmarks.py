@@ -38,7 +38,6 @@ def trigonometry(size, random_state=42):
     concetps = np.stack([
         x > 0,
         y > 0,
-        z > 0,
     ]).T
 
     # task

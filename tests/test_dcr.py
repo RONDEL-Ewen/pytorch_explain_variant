@@ -5,9 +5,16 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 
-import sys
-import os
-sys.path.append(os.path.abspath('C:/Users/ewenr/Desktop/02 - PoliTo/02 - Second Semester/02 - Explainable & Trustworthy AI/03 - Project/02 - Code/pytorch_explain_variant'))
+import sys, os
+
+# Get the directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the relative path to the desired directory
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+
+# Add the desired directory to sys.path
+sys.path.append(parent_dir)
 
 import torch_explain as te
 from torch_explain import datasets
@@ -41,7 +48,7 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1):
 
         h = encoder(x_train)
         c_emb, c_pred = concept_embedder.forward(h, [0, 1], c_train, train=True)
-        y_pred = task_predictor(c_emb, c_pred)
+        y_pred = task_predictor.forward(c_emb)
 
         concept_loss = loss_form_c(c_pred, c_train)
         task_loss = loss_form_y(y_pred, y_train)
@@ -53,7 +60,7 @@ def train_concept_bottleneck_model(x, c, y, embedding_size=1):
         if epoch % 100 == 0:
             h = encoder(x_test)
             c_emb, c_pred = concept_embedder.forward(h, [0, 1], c_test, train=False)
-            y_pred = task_predictor(c_emb, c_pred)
+            y_pred = task_predictor.forward(c_emb)
 
             task_accuracy = accuracy_score(y_test, y_pred > 0.5)
             concept_accuracy = accuracy_score(c_test, c_pred > 0.5)
