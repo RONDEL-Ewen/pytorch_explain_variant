@@ -266,7 +266,7 @@ For the evaluated task in our experiment, we chose to predict if images represen
 
 To do so, we selected 3 concepts based on 2 factors: \vspace{4pt}
 \begin{enumerate}
-    \item Discrimination between Male and Female: Using a T-test, we compared differences between means for every concepts. \vspace{1pt}
+    \item Discrimination between Male and Female: Using a Student's t-test, we compared differences between means for every concepts. \vspace{1pt}
     \item Concept Accuracy: The Concept Embedding Layer (using the Encoder's embeddings) had to have a high concept accuracy using them, so we know that they are well detected.
 \end{enumerate}
 The 3 concepts that we chose are "Wearing\textunderscore Necktie", "Gray\textunderscore Hair" and "Bald". \vspace{8pt}
@@ -286,7 +286,16 @@ Our Encoder is using a pre-trained ResNet architecture (He et al., 2016 \cite{he
 
 \section{Conclusions}
 \vspace{2pt}
-[Brief conclusion summarizing the main outcomes of the project] \vspace{8pt}
+Through this study, we have achieved several of our objectives, which can be summarized as a functional and high-performance implementation of a linear version of a Concept Reasoning Layer.
+
+This translates into a more interpretable model, thanks to its linear format, which allows us to better grasp the importance of each concept in the classification.
+
+In addition, we obtained slightly better results than the ancient DCR, especially when used on the CelebA dataset.
+
+The limitations of our study probably lie in the lack of variety in our tests. Indeed, apart from syntetic datasets, we only have one experiment that could be adapted to a real situation. One possible direction of research would therefore be to create other datasets to test different types of model, so as to be able to compare DCR-type models more easily. 
+
+Another line of progress would be to find an even more powerful version of DCR, to perhaps approach the results that can be achieved with non-interpretable models.
+\vspace{8pt}
 
 
 %%
