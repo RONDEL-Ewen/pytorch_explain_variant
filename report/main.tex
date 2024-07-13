@@ -55,7 +55,7 @@
 %%
 \begin{abstract}
 \vspace{2pt}
-After exploring different ideas for enhancing the interpretability of concept-based models, we propose a novel variant of the Deep Concept Reasoning (DCR) model, focusing on utilizing linear equations to achieve interpretable predictions. The traditional Concept Embedding Model (CEM) offers robust generalization capabilities akin to black-box models, but lacks interpretability due to its high-dimensional concept embeddings. Conversely, the DCR model provides interpretable predictions by generating logic rules over concept embeddings, yet its interpretability paradigm can be restrictive and its accuracy is slightly affected because of it.
+After exploring different ideas for enhancing the interpretability of concept-based models, we propose a novel variant of the Deep Concept Reasoning (DCR) \cite{barbiero2023interpretable} model, focusing on utilizing linear equations to achieve interpretable predictions. The traditional Concept Embedding Model (CEM) \cite{espinosa2022concept} offers robust generalization capabilities akin to black-box models, but lacks interpretability due to its high-dimensional concept embeddings. Conversely, the DCR model provides interpretable predictions by generating logic rules over concept embeddings, yet its interpretability paradigm can be restrictive and its accuracy is slightly affected because of it.
 
 Our approach aims to simplify and enhance the accuracy of the DCR model by employing linear equations over concept embeddings. This modification maintains the end-to-end trainability and augment the accuracy of the DCR, while offering a more straightforward and globally interpretable prediction mechanism. Reviewing the previous work on supervised concept-based models, we emphasize the methodologies and limitations of the CEM and the DCR.
 
@@ -196,7 +196,8 @@ This allows us to present explanations in the form of linear equations, where ea
 Unlike the original DCR, which focused on local interpretability through sample-specific logic rules, our approach naturally provides both local and global interpretability: \vspace{4pt}
 
 \begin{enumerate}
-    \item \textbf{Global Interpretability:} The weights of the linear transformation offer a clear, consistent explanation of the model's overall behavior across all samples. \vspace{8pt}
+    \item \textbf{Global Interpretability:} The linear transformation weights provide a clear and consistent explanation of the model's overall behavior for all samples. In particular, they make it easy to attest to the importance of each feature/concept in the decision-making process.\vspace{8pt}
+    
     \item \textbf{Local Interpretability:} By combining the global weights with the specific concept embeddings or predictions for a given sample, we can generate sample-specific explanations.
 \end{enumerate}
 
@@ -254,7 +255,8 @@ The Vector dataset is based on four 2-dimensional latent factors from which conc
 
 \textbf{Hyperparameters} Across the synthetic datasets, each is generated with 1000 samples. We use a 67\%-33\% split for training and testing. The learning rate was set to 0.01, and we ran training for 501 epochs. \vspace{8pt}
 
-\textbf{Task Accuracy} Across the three synthetic datasets, similar results can be seen. We can observe a small increment in task accuracy in all of them with our Linear DCR variant, with XOR going from 99.09\% with the original model to 100\% with our linear variant, Trigonometry going from 93.03\% to 96.06\% and Dot going from 89.70\% to 94.55\%. \vspace{8pt}
+\textbf{Task Accuracy} Across the three synthetic datasets, similar results can be seen. We can observe a small increment in task accuracy in all of them with our Linear DCR variant, with XOR going from 99.09\% with the original model to 100\% with our linear variant, Trigonometry going from 93.03\% to 96.06\% and Dot going from 89.70\% to 94.55\%.\\
+However, with such high results, it was difficult to compare them with those of the previous DCR, as both were too efficient. We therefore needed to test the models on a more complicated dataset, representative of a real-life situation.\vspace{8pt}
 
 \textbf{Loss} In addition to an improvement for the task accuracy, we also observe a significant improvement for the loss: -18\% for XOR, -80\% for Trigonometry and -43\% for Dot.\vspace{8pt}
 
@@ -266,8 +268,8 @@ For the evaluated task in our experiment, we chose to predict if images represen
 
 To do so, we selected 3 concepts based on 2 factors: \vspace{4pt}
 \begin{enumerate}
-    \item Discrimination between Male and Female: Using a Student's t-test, we compared differences between means for every concepts. \vspace{1pt}
-    \item Concept Accuracy: The Concept Embedding Layer (using the Encoder's embeddings) had to have a high concept accuracy using them, so we know that they are well detected.
+    \item Discrimination between Male and Female: Using a Student's t-test, we compared differences between means for every concepts. With this, we have obtained a list of the theoretically most useful concepts for differentiating males from females.\vspace{8pt}
+    \item Concept Accuracy: The Concept Embedding Layer (using the Encoder's embeddings) had to have a high concept accuracy using them, so we know that they are well detected. It enabled us to refine the model by selecting concepts that were better recognized by it, rather than those that were better at discriminating but less well recognized.
 \end{enumerate}
 The 3 concepts that we chose are "Wearing\textunderscore Necktie", "Gray\textunderscore Hair" and "Bald". \vspace{8pt}
 
@@ -279,7 +281,7 @@ Our Encoder is using a pre-trained ResNet architecture (He et al., 2016 \cite{he
 
 \textbf{Concepts Accuracy} The concepts accuracy is the accuracy with which the Concept Embedding Layer detects the concepts in the input images. As both the original DCR and our Linear DCR variant use the same Concept Embedding Layer, the concept accuracy remains the same, which is about 89\%. \vspace{8pt}
 
-\textbf{Task Accuracy} With our custom CelebA subset and our hyperparameters, the original DCR obtains an accuracy of about 78\% (on average, through multiple runs) in the task of predicting if a celebrity is a male or a female (see Figure 1). In comparison, our Linear DCR variant obtains a task accuracy of about 81\%. It represents a 3\% increase. And even if it is not a giant gap, like with the synthetic datasets it still represents a slight improvement from an already well-performing model. \vspace{8pt}
+\textbf{Task Accuracy} With our custom CelebA subset and our hyperparameters, the original DCR obtains an accuracy of about 78\% (on average, through multiple runs) in the task of predicting if a celebrity is a male or a female (see Figure 1). In comparison, our Linear DCR variant obtains a task accuracy of about 81\%. It represents a 3\% increase. And even if the gap between the results is still not gigantic, we can notice a slight improvement from an already well-performing model. \vspace{8pt}
 
 \textbf{Loss} Regarding the overall loss (including concepts detection and task prediction), which is calculated the same way for both models, the original DCR's loss is about 0.345 on average (see Figure 1). In comparison, our Linear DCR variant's loss is about 0.300, which represents a 13\% decrease. This suggests that our Linear DCR variant is potentially more confident in its predictions, and is potentially able to generalize slightly better on new unseen data.  \vspace{8pt}
 
